@@ -9,7 +9,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link <?php echo isActive("/crud/photo/") ? 'active' : ''; ?>" href="<?php echo $siteadmin; ?>crud/photo/">
                     <i class="fa fa-picture-o"></i>
                     Photos
                 </a>
@@ -21,7 +21,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link <?php echo isActive("/crud/tags/") ? 'active' : ''; ?>" href="<?php echo $siteadmin; ?>crud/tags/">
                     <i class="fa fa-tags"></i>
                     Tags
                 </a>

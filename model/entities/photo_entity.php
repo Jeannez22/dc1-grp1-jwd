@@ -1,6 +1,6 @@
 <?php
 
-function getAllPhotos(): array {
+function getAllPhotos(int $limit = 999): array {
     global $connection;
 
     $query = "SELECT
@@ -10,9 +10,10 @@ function getAllPhotos(): array {
             FROM photo
             INNER JOIN categorie ON categorie.id = photo.categorie_id
             ORDER BY photo.date_creation DESC
-            LIMIT 6;";
+            LIMIT :limit;";
 
     $stmt = $connection->prepare($query);
+    $stmt->bindParam(":limit", $limit);
     $stmt->execute();
 
     return $stmt->fetchAll();
@@ -76,4 +77,46 @@ function getPhoto(int $id): array {
     $stmt->execute();
 
     return $stmt->fetch();
+}
+
+function updatePhoto(int $id, string $titre, string $image, string $description, int $categorie_id, array $tag_ids){
+    /* @var $connection PDO */
+    global $connection;
+    
+    $query = "UPDATE photo SET titre =  :titre, image = :image, description = :description, categorie_id = :categorie_id WHERE id = :id";
+   $stmt = $connection->prepare($query);
+   $stmt->bindParam(":id", $id);
+   $stmt->bindParam(":titre", $titre);
+   $stmt->bindParam(":image", $image);
+   $stmt->bindParam(":description", $description);
+   $stmt->bindParam(":categorie_id", $categorie_id);
+   $stmt->execute();
+   
+    deletePhotoHasTag($id);
+
+   foreach ($tag_ids as $tag_id){
+       insertPhotoHasTag($id, $tag_id);
+   }
+}
+
+function insertPhotoHasTag(int $photo_id){
+    /* @var $connection PDO */
+    global $connection;
+    
+    $query = "DELETE FROM photo_has_tag WHERE photo_id = :photo_id";
+   $stmt = $connection->prepare($query);
+   $stmt->bindParam(":photo_id", $photo_id);
+   $stmt->execute();
+}
+
+function deletePhotoHasTag (int $photo_id){
+    /* @var $connection PDO */
+    
+    global $connection;
+            
+    $query = "DELETE FROM photo_has_tag WHERE photo_id = :photo_id";
+    
+    $stmt = $connection->prepare($query);
+    $stmt->bindParam(":photo_id", $photo_id);
+    $stmt->execute();
 }
